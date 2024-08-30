@@ -1,14 +1,13 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import SearchBar from './components/SearchBar'
 
 function App() {
   const [count, setCount] = useState(0)
 
   return (
     <>
-      <div className='min-h-screen justify-center text-center bg-gray-700'>
-         
+      <div className='flex p-4 min-h-screen justify-center bg-gray-700'>
+         <SearchBar />
       </div>
 
     </>
