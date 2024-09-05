@@ -10,7 +10,7 @@ import axios from 'axios';
 function App() {
   const [weather, setWeather] = useState(null);
   const [forecast, setForecast] = useState(null);
-  const [city, setCity] = useState('London');
+  const [city, setCity] = useState('Vancouver');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -19,7 +19,6 @@ function App() {
   const apiForcastUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric`
   
   const {width} = useWidth()
-
 
   useEffect(() => {
     const fetchWeather = async () => {
@@ -38,7 +37,6 @@ function App() {
           description:weather[0].description,
           iconCode:weather[0].icon
         };
-        // console.log(data)
         setWeather(data);
         setLoading(false);
       } catch (err) {
@@ -51,7 +49,6 @@ function App() {
       try{
         setLoading(true)
         const response = await axios.get(apiForcastUrl)
-        // console.log(response.data)
         setForecast(response.data)
       } catch (err) {
         setError(err);
@@ -60,7 +57,6 @@ function App() {
     }
 
     fetchForecast()
-
     fetchWeather();
   }, [city]);
 
@@ -69,14 +65,8 @@ function App() {
     event.preventDefault();
   };
 
-  // console.log(weather)
-  // const iconCode = weather.weather[0].icon
-
-  // console.log(weather)
   // if (loading) return <p>Loading...</p>;
   // if (error) return <p>Error fetching weather data: {error.message}</p>;
-  // const iconCode = weather ? weather.icon : null;
-
 
   return (
     <>
