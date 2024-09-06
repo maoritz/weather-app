@@ -1,6 +1,5 @@
 import { useState,useEffect } from 'react'
 import SearchBar from './components/SearchBar'
-import WeatherIcon from './components/WeatherIcon'
 import Forecast from './components/Forecast'
 import CurrentWeather from './components/CurrentWeather'
 import useWidth from './hooks/useWidth'
@@ -45,6 +44,7 @@ function App() {
       }
     };
 
+
     const fetchForecast = async () => {
       try{
         setLoading(true)
@@ -71,11 +71,11 @@ function App() {
   return (
     <>
       {width > 550 ? <Desktop /> : weather && forecast &&
-      <div className='flex flex-wrap space-y-8 content-start justify-center p-8 min-h-screen bg-gray-700'>
+      <div className='flex flex-wrap space-y-8 content-start justify-center p-8 min-h-screen bg-gradient-to-t from-blue-500 via-blue-700 to-blue-500'>
+        {console.log(weather)}
         <SearchBar  value={city} onChange={handleCityChange} />
-        <WeatherIcon iconCode={weather.iconCode} />
-        <CurrentWeather temp={weather.temp}  cityName={weather.cityName} description={weather.description} feelsLike={weather.feelsLike}/>
-        <Forecast  forecast={forecast} />
+        <CurrentWeather temp={weather.temp}  cityName={weather.cityName} description={weather.description} feelsLike={weather.feelsLike} icon={weather.iconCode}/>
+        <Forecast forecast={forecast} />
       </div>
       }
     </>
