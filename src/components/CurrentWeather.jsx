@@ -20,7 +20,6 @@ function CurrentWeather({cityName,description,feelsLike,temp,icon}) {
         <div className="text-s text-blue-200 mt-1">
           Feels like: {formatTemp(feelsLike)}
         </div>
-
     </div>
   </div>
   )
