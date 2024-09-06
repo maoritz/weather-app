@@ -11,7 +11,7 @@ function CurrentWeather({cityName,description,feelsLike,temp,icon}) {
        <div className="text-2xl text-blue-100 mt-2">
           {cityName} 
         </div>
-        <div className="text-5xl font-bold text-2xl opacity-95 align-top mt-1">
+        <div className="text-5xl font-bold text-2xl opacity-95 align-top mt-3">
           {formatTemp(temp)}°
         </div>
         <div className="text-lg text-blue-200 mt-1">

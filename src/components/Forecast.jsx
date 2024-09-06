@@ -46,7 +46,7 @@ function Forecast({ forecast }) {
   }
 
   return (
-    <div className="grow text-white rounded-xl p-4 basis-8/12">
+    <div className="grow text-white rounded-xl p-1">
       {weatherDataByDate.length > 0 ? (
         weatherDataByDate.map((weatherObj, index) => {
           return <OneDayWeather key={index} forecast={weatherObj} />;
