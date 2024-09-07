@@ -1,1 +1,1 @@
-export const formatDate = date => date.split('').slice(5).join('')
+export const formatDate = date => date.split('').slice(5).join('').replace(/-/g, '/')

@@ -14,7 +14,7 @@ function OneDayWeather({forecast}) {
         <div className="mr-2">{description}</div>
       </div>
       <div className="text-sm">
-        <div className="mb-2">{formatDate(date)}</div>
+        <div className="text-lg mb-2">{formatDate(date)}</div>
         <div className="text-blue-300 text-sm">L: {formatTemp(minTemp)}°</div>
         <div>H: {formatTemp(maxTemp)}°</div>
       </div>
