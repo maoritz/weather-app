@@ -7,11 +7,13 @@ import Desktop from './components/Desktop'
 import axios from 'axios';
 
 function App() {
+
   // App main states
   const [weather, setWeather] = useState(null);
   const [forecast, setForecast] = useState(null);
   const [city, setCity] = useState('Vancouver');
   const [timeOfDay, setTimeOfDay] = useState('');
+  const [location, setLocation] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -37,7 +39,24 @@ function App() {
     event.preventDefault();
   };
 
-  // Fetch date from OpenWeatherMap API
+  // Get user location and set it as default location
+  useEffect(() => {
+    const fetchLocation = async () => {
+      try {
+        const response = await axios.get('https://ipapi.co/json/');
+        setLocation(response.data);
+        setCity(response.data.city)
+      } catch (err) {
+        setError('Error fetching location');
+      }
+    };
+
+    fetchLocation();
+  }, []);
+
+  
+
+  // Fetch data from OpenWeatherMap API
   useEffect(() => {
     const fetchWeather = async () => {
       try {
@@ -63,7 +82,7 @@ function App() {
       }
     };
 
-
+  // Fetch forecast data from OpenWeatherMap API
     const fetchForecast = async () => {
       try{
         setLoading(true)
@@ -74,9 +93,10 @@ function App() {
         setLoading(false);
       }
     }
-
+  
     fetchForecast()
     fetchWeather();
+  
   }, [city]);
 
   // Set the state of time of the day to manipulate background color.
@@ -105,7 +125,6 @@ function App() {
     <>
       {width > 550 ? <Desktop /> : weather && forecast && timeOfDay &&
       <div className={`flex flex-wrap space-y-8 content-start justify-center p-8 min-h-screen ${setBackgroundColorByTime()}`}>
-        {console.log(weather)}
         <SearchBar  value={city} onChange={handleCityChange} />
         <CurrentWeather temp={weather.temp}  cityName={weather.cityName} description={weather.description} feelsLike={weather.feelsLike} icon={weather.iconCode}/>
         <Forecast forecast={forecast} />
