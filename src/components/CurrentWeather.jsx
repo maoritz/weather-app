@@ -4,7 +4,7 @@ import {formatTemp} from '../utils/formatTemp'
 function CurrentWeather({cityName,description,feelsLike,temp,icon}) {
   return (
     <div className="flex basis-11/12 text-white rounded-2xl text-center shadow-lg justify-center">
-      <div className='flex justify-center items-center'>
+      <div className='flex flex-col justify-center items-center'>
         <img className='size-28 object-cover' src={`http://openweathermap.org/img/wn/${icon}@2x.png`} alt="Weather Icon"/>
       </div>
       <div className="flex ml-auto text-white rounded-2xl p-5 w-40 text-center basis-6/12 flex-col justify-center">

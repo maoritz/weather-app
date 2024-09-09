@@ -4,6 +4,7 @@ import Forecast from './components/Forecast'
 import CurrentWeather from './components/CurrentWeather'
 import useWidth from './hooks/useWidth'
 import Desktop from './components/Desktop'
+import {convertTimestampToDate} from './utils/formatTimeStamp'
 import axios from 'axios';
 
 function App() {
@@ -11,7 +12,7 @@ function App() {
   // App main states
   const [weather, setWeather] = useState(null);
   const [forecast, setForecast] = useState(null);
-  const [city, setCity] = useState('Vancouver');
+  const [city, setCity] = useState(null);
   const [timeOfDay, setTimeOfDay] = useState('');
   const [location, setLocation] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -48,13 +49,12 @@ function App() {
         setCity(response.data.city)
       } catch (err) {
         setError('Error fetching location');
+        setLoading(false);
       }
     };
 
     fetchLocation();
   }, []);
-
-  
 
   // Fetch data from OpenWeatherMap API
   useEffect(() => {
@@ -62,7 +62,8 @@ function App() {
       try {
         setLoading(true);
         const response = await axios.get(apiWeatherUrl)
-        const {coord,main,name,weather} = response.data
+        // console.log(response.data)
+        const {coord,main,name,weather,timezone} = response.data
         const data = {
           coordinates:coord,
           feelsLike:main.feels_like,
@@ -72,7 +73,8 @@ function App() {
           minTemp:main.temp_min,
           cityName:name,
           description:weather[0].description,
-          iconCode:weather[0].icon
+          iconCode:weather[0].icon,
+          timezone:timezone
         };
         setWeather(data);
         setLoading(false);
@@ -103,6 +105,7 @@ function App() {
   useEffect(() => {
     const currentTime = new Date();
     const hour = currentTime.getHours();
+    console.log(convertTimestampToDate(currentTime))
 
     if (hour >= 5 && hour < 12) {
         setTimeOfDay('Morning');
