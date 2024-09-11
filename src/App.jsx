@@ -1,52 +1,48 @@
-import { useState,useEffect } from 'react'
-import SearchBar from './components/SearchBar'
-import Forecast from './components/Forecast'
-import CurrentWeather from './components/CurrentWeather'
-import useWidth from './hooks/useWidth'
-import Desktop from './components/Desktop'
-import {convertTimestampToDate} from './utils/formatTimeStamp'
+import { useState, useEffect } from 'react';
 import axios from 'axios';
+import SearchBar from './components/SearchBar';
+import Forecast from './components/Forecast';
+import CurrentWeather from './components/CurrentWeather';
+import useWidth from './hooks/useWidth';
+import Desktop from './components/Desktop';
 
 function App() {
-
-  // App main states
-  const [weather, setWeather] = useState(null);
-  const [forecast, setForecast] = useState(null);
-  const [city, setCity] = useState(null);
-  const [timeOfDay, setTimeOfDay] = useState('');
-  const [location, setLocation] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [weather, setWeather] = useState(null); // Current Weather Data
+  const [forecast, setForecast] = useState(null); // Forecast Data
+  const [city, setCity] = useState(''); // Update the city by the Searchbar
+  const [timeOfDay, setTimeOfDay] = useState(''); // Update time in day by Searchbar
+  const [loading, setLoading] = useState(true); 
   const [error, setError] = useState(null);
+  const [timezone, setTimezone] = useState(''); 
 
-  // API fetch key and base urls
-  const apiKey = '4709fe955e77e909213e5ddc5c4f3cf9'
+  // openMapWeather info
+  const apiKey = '4709fe955e77e909213e5ddc5c4f3cf9';
   const apiWeatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
-  const apiForcastUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric`
+  const apiForcastUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric`;
 
-  // Set background by time
+  // Set background color based on the time of day
   const setBackgroundColorByTime = () => {
-    const dayBackgroundColor = `bg-gradient-to-br from-yellow-300 via-blue-600 via-35% via-45% to-blue-700`
-    const eveningBackgroundColor = `bg-gradient-to-br from-blue-300 via-blue-800 to-blue-900`
-    const nightBackgroundColor = `bg-gradient-to-br from-blue-950 via-blue-900 to-blue-950`
+    const dayBackgroundColor = 'bg-gradient-to-br from-yellow-300 via-blue-600 to-blue-700';
+    const eveningBackgroundColor = 'bg-gradient-to-br from-blue-300 via-blue-800 to-blue-900';
+    const nightBackgroundColor = 'bg-gradient-to-br from-blue-950 via-blue-900 to-blue-950';
 
-    if (timeOfDay === 'Evening') return  eveningBackgroundColor
-    if (timeOfDay === 'Night') return  nightBackgroundColor
-    return dayBackgroundColor
-  }
+    if (timeOfDay === 'Evening') return eveningBackgroundColor;
+    if (timeOfDay === 'Night') return nightBackgroundColor;
+    return dayBackgroundColor;
+  };
 
-  // Search for city event handling
+  // Handle city search event
   const handleCityChange = (event) => {
     setCity(event.target.value);
     event.preventDefault();
   };
 
-  // Get user location and set it as default location
+  // Fetch user location and set default city
   useEffect(() => {
     const fetchLocation = async () => {
       try {
         const response = await axios.get('https://ipapi.co/json/');
-        setLocation(response.data);
-        setCity(response.data.city)
+        setCity(response.data.city);
       } catch (err) {
         setError('Error fetching location');
         setLoading(false);
@@ -56,27 +52,27 @@ function App() {
     fetchLocation();
   }, []);
 
-  // Fetch data from OpenWeatherMap API
+  // Fetch weather and forecast data
   useEffect(() => {
     const fetchWeather = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(apiWeatherUrl)
-        // console.log(response.data)
-        const {coord,main,name,weather,timezone} = response.data
+        const response = await axios.get(apiWeatherUrl);
+        const { coord, main, name, weather, timezone } = response.data;
         const data = {
-          coordinates:coord,
-          feelsLike:main.feels_like,
-          humidity:main.humidity,
-          temp:main.temp,
-          maxTemp:main.temp_max,
-          minTemp:main.temp_min,
-          cityName:name,
-          description:weather[0].description,
-          iconCode:weather[0].icon,
-          timezone:timezone
+          coordinates: coord,
+          feelsLike: main.feels_like,
+          humidity: main.humidity,
+          temp: main.temp,
+          maxTemp: main.temp_max,
+          minTemp: main.temp_min,
+          cityName: name,
+          description: weather[0].description,
+          iconCode: weather[0].icon,
+          timezone: timezone, // Save timezone
         };
         setWeather(data);
+        setTimezone(data.timezone); // Set timezone
         setLoading(false);
       } catch (err) {
         setError(err);
@@ -84,57 +80,80 @@ function App() {
       }
     };
 
-  // Fetch forecast data from OpenWeatherMap API
     const fetchForecast = async () => {
-      try{
-        setLoading(true)
-        const response = await axios.get(apiForcastUrl)
-        setForecast(response.data)
+      try {
+        setLoading(true);
+        const response = await axios.get(apiForcastUrl);
+        setForecast(response.data);
       } catch (err) {
         setError(err);
         setLoading(false);
       }
-    }
-  
-    fetchForecast()
+    };
+
+    fetchForecast();
     fetchWeather();
-  
   }, [city]);
 
-  // Set the state of time of the day to manipulate background color.
+  // Calculate time of day based on city timezone
   useEffect(() => {
-    const currentTime = new Date();
-    const hour = currentTime.getHours();
-    console.log(convertTimestampToDate(currentTime))
+    const calculateTimeOfDay = async () => {
+      if (!timezone) return;
 
-    if (hour >= 5 && hour < 12) {
-        setTimeOfDay('Morning');
-    } else if (hour >= 12 && hour < 17) {
-        setTimeOfDay('Afternoon');
-    } else if (hour >= 17 && hour < 21) {
-        setTimeOfDay('Evening');
-    } else {
-        setTimeOfDay('Night');
-    }
-  },[])
+      try {
+        const now = new Date();
 
-  // if (loading) return <p>Loading...</p>;
-  // if (error) return <p>Error fetching weather data: {error.message}</p>;
+        // Get UTC time in milliseconds
+        const utcOffset = now.getTimezoneOffset() * 60000;
 
-  // Tell app what is the screen size for conditional rendering
-  const {width} = useWidth()
+        // Calculate local time using timezone offset (timezone is in seconds, convert to milliseconds)
+        const localTime = new Date(now.getTime() + utcOffset + (timezone * 1000));
+
+        // Get local hour
+        const hour = localTime.getHours();
+        console.log(hour);
+
+        // Determine time of day based on local hour
+        if (hour >= 5 && hour < 12) {
+          setTimeOfDay('Morning');
+        } else if (hour >= 12 && hour < 17) {
+          setTimeOfDay('Afternoon');
+        } else if (hour >= 17 && hour < 21) {
+          setTimeOfDay('Evening');
+        } else {
+          setTimeOfDay('Night');
+        }
+      } catch (error) {
+        console.error('Error calculating time of day:', error);
+      }
+    };
+
+    calculateTimeOfDay();
+  }, [weather, timezone]); // Ensure timezone is included in dependencies
+
+
+  const { width } = useWidth();
+
 
   return (
     <>
-      {width > 550 ? <Desktop /> : weather && forecast && timeOfDay &&
-      <div className={`flex flex-wrap space-y-8 content-start justify-center p-8 min-h-screen ${setBackgroundColorByTime()}`}>
-        <SearchBar  value={city} onChange={handleCityChange} />
-        <CurrentWeather temp={weather.temp}  cityName={weather.cityName} description={weather.description} feelsLike={weather.feelsLike} icon={weather.iconCode}/>
-        <Forecast forecast={forecast} />
-      </div>
-      }
+      {width > 550 ? (
+        <Desktop />
+      ) : weather && forecast && timeOfDay && (
+        <div className={`flex flex-wrap space-y-8 content-start justify-center p-8 min-h-screen ${setBackgroundColorByTime()}`}>
+          <SearchBar value={city} onChange={handleCityChange} />
+          <CurrentWeather
+            temp={weather.temp}
+            cityName={weather.cityName}
+            description={weather.description}
+            feelsLike={weather.feelsLike}
+            icon={weather.iconCode}
+          />
+          <Forecast forecast={forecast} />
+        </div>
+      )}
     </>
-  )
+  );
 }
 
-export default App
+export default App;
