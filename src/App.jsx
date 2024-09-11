@@ -14,6 +14,7 @@ function App() {
   const [loading, setLoading] = useState(true); 
   const [error, setError] = useState(null);
   const [timezone, setTimezone] = useState(''); 
+  const [suggestions, setSuggestions] = useState([]); // Location suggestions
 
   // openMapWeather info
   const apiKey = '4709fe955e77e909213e5ddc5c4f3cf9';
@@ -31,11 +32,32 @@ function App() {
     return dayBackgroundColor;
   };
 
-  // Handle city search event
-  const handleCityChange = (event) => {
-    setCity(event.target.value);
-    event.preventDefault();
-  };
+    // Fetch location suggestions when the user types
+    const handleSearchChange = async (e) => {
+      const value = e.target.value;
+      setCity(value);
+      e.preventDefault()
+  
+      if (value.length > 2) {
+        // Call OpenWeatherMap Geocoding API to get location suggestions
+        const apiUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${value}&limit=5&appid=${apiKey}`;
+        try {
+          const response = await axios.get(apiUrl);
+          setSuggestions(response.data); // Set the fetched suggestions
+        } catch (error) {
+          console.error('Error fetching location suggestions:', error);
+          setSuggestions([]);
+        }
+      } else {
+        setSuggestions([]); // Clear suggestions if input is too short
+      }
+    };
+  
+    // Handle user selecting a suggestion
+    const handleSelectSuggestion = (suggestion) => {
+      setCity(`${suggestion.name}, ${suggestion.country}`);
+      setSuggestions([]); // Clear suggestions after selection
+    };
 
   // Fetch user location and set default city
   useEffect(() => {
@@ -141,7 +163,10 @@ function App() {
         <Desktop />
       ) : weather && forecast && timeOfDay && (
         <div className={`flex flex-wrap space-y-8 content-start justify-center p-8 min-h-screen ${setBackgroundColorByTime()}`}>
-          <SearchBar value={city} onChange={handleCityChange} />
+          <SearchBar value={city} 
+        onChange={handleSearchChange}
+        suggestions={suggestions}
+        onSelectSuggestion={handleSelectSuggestion}/>
           <CurrentWeather
             temp={weather.temp}
             cityName={weather.cityName}
