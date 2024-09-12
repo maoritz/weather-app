@@ -9,7 +9,7 @@ function OneDayWeather({forecast}) {
   return (
     <div className="flex items-center py-3 border-b">
       <div className="mr-2">
-        <img src={`public/${convertAPIIconsToLocal(icon)}.png`}  alt="Weather icon"/>
+        <img src={`assets/icons/${convertAPIIconsToLocal(icon)}.png`}  alt="Weather icon"/>
       </div>
       <div className="flex-grow">
         <div className="mr-2">{description}</div>
