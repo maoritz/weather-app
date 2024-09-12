@@ -162,7 +162,7 @@ function App() {
       {width > 550 ? (
         <Desktop />
       ) : weather && forecast && timeOfDay && (
-        <div className={`flex flex-wrap space-y-8 content-start justify-center p-8 min-h-screen ${setBackgroundColorByTime()}`}>
+        <div className={`flex flex-wrap space-y-8 content-start justify-center p-5 min-h-screen ${setBackgroundColorByTime()}`}>
           <SearchBar value={city} 
         onChange={handleSearchChange}
         suggestions={suggestions}

@@ -8,13 +8,13 @@ function CurrentWeather({weather}) {
     const visibilityInKm = () => (visibility / 1000).toFixed(1); 
     
   return (
-    <div className="flex text-white rounded-2xl shadow-lg justify-center">
-      <div className="flex flex-col p-6">
+    <div className="flex grow text-white rounded-2xl shadow-lg justify-center pl-2 pr-2 pt-5 pb-5">
+      <div className="flex flex-col ">
         <div>
           Now
         </div>
-        <div className='flex justify-center items-center pr-10'>
-          <div className="text-5xl opacity-95 align-top pl-2">
+        <div className='flex justify-center items-center'>
+          <div className="text-5xl opacity-95 align-top">
             {formatTemp(temp)}°
           </div>
           <img className='size-11' src={`src/assets/icons/${convertAPIIconsToLocal(iconCode)}.png`} alt="Weather Icon"/>
@@ -23,11 +23,11 @@ function CurrentWeather({weather}) {
           Feels like: {formatTemp(feelsLike)}
         </div>
       </div>
-      <div className="flex text-white rounded-2xl p-5 text-center basis-6/12 flex-col justify-center">
-        <div className="text-xl text-blue-200 mb-2 mt-2">
-          {description} 
-        </div>
+      <div className="flex text-white justify-center items-end rounded-2xl basis-6/12 flex-col justify-center">
         <div className='text-sm'>
+          <div className="text-xl text-blue-200 mb-2">
+            {description} 
+          </div>
           <div>
             Wind: {convertMpsToKph()} km/h
           </div>
@@ -38,8 +38,8 @@ function CurrentWeather({weather}) {
             Visibility: {visibilityInKm()} km
           </div>
         </div>
+      </div>
     </div>
-  </div>
   )
 }
 
