@@ -1,24 +1,42 @@
 import React from 'react'
 import {formatTemp} from '../utils/formatTemp'
+import { convertAPIIconsToLocal } from '../utils/convertAPIIconsToLocal'
 
-function CurrentWeather({cityName,description,feelsLike,temp,icon}) {
+function CurrentWeather({weather}) {
+    const {cityName,visibility,humidity,wind,description,feelsLike,temp,iconCode} = weather
+    const convertMpsToKph = () => Math.round(wind * 3.6)
+    const visibilityInKm = () => (visibility / 1000).toFixed(1); 
+    
   return (
-    <div className="flex basis-11/12 text-white rounded-2xl text-center shadow-lg justify-center">
-      <div className='flex flex-col justify-center items-center'>
-        <img className='size-28 object-cover' src={`http://openweathermap.org/img/wn/${icon}@2x.png`} alt="Weather Icon"/>
+    <div className="flex text-white rounded-2xl shadow-lg justify-center">
+      <div className="flex flex-col p-6">
+        <div>
+          Now
+        </div>
+        <div className='flex justify-center items-center pr-10'>
+          <div className="text-5xl opacity-95 align-top pl-2">
+            {formatTemp(temp)}°
+          </div>
+          <img className='size-11' src={`src/assets/icons/${convertAPIIconsToLocal(iconCode)}.png`} alt="Weather Icon"/>
+        </div>
+        <div className="text-sm mt-1">
+          Feels like: {formatTemp(feelsLike)}
+        </div>
       </div>
-      <div className="flex ml-auto text-white rounded-2xl p-5 w-40 text-center basis-6/12 flex-col justify-center">
-       <div className="text-2xl text-blue-100 mt-2">
-          {cityName} 
-        </div>
-        <div className="text-5xl font-bold text-2xl opacity-95 align-top mt-3">
-          {formatTemp(temp)}°
-        </div>
-        <div className="text-lg text-blue-200 mt-1">
+      <div className="flex text-white rounded-2xl p-5 text-center basis-6/12 flex-col justify-center">
+        <div className="text-xl text-blue-200 mb-2 mt-2">
           {description} 
         </div>
-        <div className="text-s text-blue-200 mt-1">
-          Feels like: {formatTemp(feelsLike)}
+        <div className='text-sm'>
+          <div>
+            Wind: {convertMpsToKph()} km/h
+          </div>
+          <div>
+            Humidity: {humidity}%
+          </div>
+          <div>
+            Visibility: {visibilityInKm()} km
+          </div>
         </div>
     </div>
   </div>

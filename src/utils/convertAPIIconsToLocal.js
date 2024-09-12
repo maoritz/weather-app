@@ -1,0 +1,21 @@
+export const convertAPIIconsToLocal = (iconCode) =>{
+  if(iconCode === '01d') return 'clear_sun'
+  if(iconCode === '02d') return 'day_few_clouds'
+  if(iconCode === '03d') return 'clouds'
+  if(iconCode === '04d') return 'clouds'
+  if(iconCode === '09d') return 'rain'
+  if(iconCode === '10d') return 'day_rain'
+  if(iconCode === '11d') return 'thunderstorm'
+  if(iconCode === '13d') return 'snow'
+  if(iconCode === '50d') return 'fog'
+  if(iconCode === '01n') return 'night_clear'
+  if(iconCode === '02n') return 'night_some_clouds'
+  if(iconCode === '03n') return 'clouds'
+  if(iconCode === '04n') return 'clouds'
+  if(iconCode === '09n') return 'rain'
+  if(iconCode === '10n') return 'night_rain'
+  if(iconCode === '11n') return 'thunderstorm'
+  if(iconCode === '13n') return 'snow'
+  if(iconCode === '50n') return 'fog'
+
+}

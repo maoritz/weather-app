@@ -80,7 +80,8 @@ function App() {
       try {
         setLoading(true);
         const response = await axios.get(apiWeatherUrl);
-        const { coord, main, name, weather, timezone } = response.data;
+        console.log(response.data)
+        const { coord, main, name, weather, timezone, wind ,visibility} = response.data;
         const data = {
           coordinates: coord,
           feelsLike: main.feels_like,
@@ -92,6 +93,8 @@ function App() {
           description: weather[0].description,
           iconCode: weather[0].icon,
           timezone: timezone, // Save timezone
+          wind: wind.speed,
+          visibility:visibility
         };
         setWeather(data);
         setTimezone(data.timezone); // Set timezone
@@ -133,14 +136,11 @@ function App() {
 
         // Get local hour
         const hour = localTime.getHours();
-        console.log(hour);
 
         // Determine time of day based on local hour
-        if (hour >= 5 && hour < 12) {
-          setTimeOfDay('Morning');
-        } else if (hour >= 12 && hour < 17) {
-          setTimeOfDay('Afternoon');
-        } else if (hour >= 17 && hour < 21) {
+        if (hour >= 6 && hour < 17) {
+          setTimeOfDay('day');
+        } else if (hour >= 17 && hour < 20) {
           setTimeOfDay('Evening');
         } else {
           setTimeOfDay('Night');
@@ -168,11 +168,7 @@ function App() {
         suggestions={suggestions}
         onSelectSuggestion={handleSelectSuggestion}/>
           <CurrentWeather
-            temp={weather.temp}
-            cityName={weather.cityName}
-            description={weather.description}
-            feelsLike={weather.feelsLike}
-            icon={weather.iconCode}
+            weather={weather}
           />
           <Forecast forecast={forecast} />
         </div>
