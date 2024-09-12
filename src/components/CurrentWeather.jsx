@@ -17,7 +17,7 @@ function CurrentWeather({weather}) {
           <div className="text-5xl opacity-95 align-top">
             {formatTemp(temp)}°
           </div>
-          <img className='size-11' src={`public/assets/icons//${convertAPIIconsToLocal(iconCode)}.png`} alt="Weather Icon"/>
+          <img className='size-11' src={`assets/icons//${convertAPIIconsToLocal(iconCode)}.png`} alt="Weather Icon"/>
         </div>
         <div className="text-sm mt-1">
           Feels like: {formatTemp(feelsLike)}
