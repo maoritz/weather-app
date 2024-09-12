@@ -9,8 +9,9 @@ import Desktop from './components/Desktop';
 function App() {
   const [weather, setWeather] = useState(null); // Current Weather Data
   const [forecast, setForecast] = useState(null); // Forecast Data
-  const [city, setCity] = useState(''); // Update the city by the Searchbar
-  const [timeOfDay, setTimeOfDay] = useState(''); // Update time in day by Searchbar
+  const [city, setCity] = useState(''); // This will be updated by suggestion click
+  const [searchTerm, setSearchTerm] = useState(''); // For typing in the SearchBar
+  const [timeOfDay, setTimeOfDay] = useState(''); // Time of day
   const [loading, setLoading] = useState(true); 
   const [error, setError] = useState(null);
   const [timezone, setTimezone] = useState(''); 
@@ -32,32 +33,30 @@ function App() {
     return dayBackgroundColor;
   };
 
-    // Fetch location suggestions when the user types
-    const handleSearchChange = async (e) => {
-      const value = e.target.value;
-      setCity(value);
-      e.preventDefault()
+  // Fetch location suggestions when the user types
+  const handleSearchChange = async (e) => {
+    const value = e.target.value;
+    setSearchTerm(value); // Update searchTerm, not city
   
-      if (value.length > 2) {
-        // Call OpenWeatherMap Geocoding API to get location suggestions
-        const apiUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${value}&limit=5&appid=${apiKey}`;
-        try {
-          const response = await axios.get(apiUrl);
-          setSuggestions(response.data); // Set the fetched suggestions
-        } catch (error) {
-          console.error('Error fetching location suggestions:', error);
-          setSuggestions([]);
-        }
-      } else {
-        setSuggestions([]); // Clear suggestions if input is too short
+    if (value.length > 2) {
+      const apiUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${value}&limit=5&appid=${apiKey}`;
+      try {
+        const response = await axios.get(apiUrl);
+        setSuggestions(response.data);
+      } catch (error) {
+        console.error('Error fetching location suggestions:', error);
+        setSuggestions([]);
       }
-    };
+    } else {
+      setSuggestions([]); // Clear suggestions if input is too short
+    }
+  };
   
-    // Handle user selecting a suggestion
-    const handleSelectSuggestion = (suggestion) => {
-      setCity(`${suggestion.name}, ${suggestion.country}`);
-      setSuggestions([]); // Clear suggestions after selection
-    };
+  // Handle user selecting a suggestion
+  const handleSelectSuggestion = (suggestion) => {
+    setCity(`${suggestion.name}, ${suggestion.country}`); // Set city when suggestion is selected
+    setSuggestions([]); // Clear suggestions after selection
+  };
 
   // Fetch user location and set default city
   useEffect(() => {
@@ -74,14 +73,15 @@ function App() {
     fetchLocation();
   }, []);
 
-  // Fetch weather and forecast data
+  // Fetch weather and forecast data when `city` changes (after a suggestion is selected)
   useEffect(() => {
+    if (!city) return;
+
     const fetchWeather = async () => {
       try {
         setLoading(true);
         const response = await axios.get(apiWeatherUrl);
-        console.log(response.data)
-        const { coord, main, name, weather, timezone, wind ,visibility} = response.data;
+        const { coord, main, name, weather, timezone, wind, visibility } = response.data;
         const data = {
           coordinates: coord,
           feelsLike: main.feels_like,
@@ -94,7 +94,7 @@ function App() {
           iconCode: weather[0].icon,
           timezone: timezone, // Save timezone
           wind: wind.speed,
-          visibility:visibility
+          visibility: visibility
         };
         setWeather(data);
         setTimezone(data.timezone); // Set timezone
@@ -122,40 +122,27 @@ function App() {
 
   // Calculate time of day based on city timezone
   useEffect(() => {
-    const calculateTimeOfDay = async () => {
+    const calculateTimeOfDay = () => {
       if (!timezone) return;
 
-      try {
-        const now = new Date();
+      const now = new Date();
+      const utcOffset = now.getTimezoneOffset() * 60000;
+      const localTime = new Date(now.getTime() + utcOffset + (timezone * 1000));
+      const hour = localTime.getHours();
 
-        // Get UTC time in milliseconds
-        const utcOffset = now.getTimezoneOffset() * 60000;
-
-        // Calculate local time using timezone offset (timezone is in seconds, convert to milliseconds)
-        const localTime = new Date(now.getTime() + utcOffset + (timezone * 1000));
-
-        // Get local hour
-        const hour = localTime.getHours();
-
-        // Determine time of day based on local hour
-        if (hour >= 6 && hour < 17) {
-          setTimeOfDay('day');
-        } else if (hour >= 17 && hour < 20) {
-          setTimeOfDay('Evening');
-        } else {
-          setTimeOfDay('Night');
-        }
-      } catch (error) {
-        console.error('Error calculating time of day:', error);
+      if (hour >= 6 && hour < 17) {
+        setTimeOfDay('day');
+      } else if (hour >= 17 && hour < 20) {
+        setTimeOfDay('Evening');
+      } else {
+        setTimeOfDay('Night');
       }
     };
 
     calculateTimeOfDay();
-  }, [weather, timezone]); // Ensure timezone is included in dependencies
-
+  }, [weather, timezone]);
 
   const { width } = useWidth();
-
 
   return (
     <>
@@ -163,13 +150,13 @@ function App() {
         <Desktop />
       ) : weather && forecast && timeOfDay && (
         <div className={`flex flex-wrap space-y-8 content-start justify-center p-5 min-h-screen ${setBackgroundColorByTime()}`}>
-          <SearchBar value={city} 
-        onChange={handleSearchChange}
-        suggestions={suggestions}
-        onSelectSuggestion={handleSelectSuggestion}/>
-          <CurrentWeather
-            weather={weather}
+          <SearchBar 
+            value={searchTerm} // Bind searchTerm to the input
+            onChange={handleSearchChange}
+            suggestions={suggestions}
+            onSelectSuggestion={handleSelectSuggestion}
           />
+          <CurrentWeather weather={weather} />
           <Forecast forecast={forecast} />
         </div>
       )}
