@@ -8,8 +8,12 @@ function CurrentWeather({weather}) {
     const visibilityInKm = () => (visibility / 1000).toFixed(1); 
     
   return (
-    <div className="flex grow text-white rounded-2xl shadow-lg justify-center pl-2 pr-2 pt-5 pb-5">
-      <div className="flex flex-col ">
+    <div className="flex grow text-white rounded-2xl shadow-lg justify-center pl-2 pr-2 pt-2 pb-5">
+      <div className="flex flex-col">
+        <div className='pb-3'>
+          Result for:
+          <span className='text-blue-100'> {cityName}</span>
+        </div>
         <div>
           Now
         </div>
